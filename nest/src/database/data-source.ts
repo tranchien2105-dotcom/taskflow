@@ -3,6 +3,7 @@ import 'dotenv/config';
 import { DataSource } from 'typeorm';
 
 import { Task } from '../tasks/entities/task.entity';
+import { User } from '../users/entities/user.entity';
 
 export default new DataSource({
     type: 'postgres',
@@ -17,7 +18,7 @@ export default new DataSource({
 
     database: process.env.DB_DATABASE,
 
-    entities: [Task],
+    entities: [Task, User],
 
     migrations: ['src/database/migrations/*.ts'],
 });

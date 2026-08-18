@@ -7,11 +7,17 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  UseGuards
 } from '@nestjs/common';
 
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard'
+import { Roles } from '../auth/decorators/roles.decorator';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { Role } from 'src/auth/enums/role.enum';
 
 @Controller('tasks')
 export class TasksController {
@@ -19,6 +25,12 @@ export class TasksController {
     private readonly tasksService: TasksService,
   ) { }
 
+  @Get('me')
+  getMe(@CurrentUser() user) {
+    return user;
+  }
+
+  // @UseGuards(JwtAuthGuard)
   @Get()
   findAll() {
     return this.tasksService.findAll();
@@ -46,6 +58,8 @@ export class TasksController {
     return this.tasksService.update(id, updateTaskDto);
   }
 
+  @Roles(Role.ADMIN)
+  @UseGuards(RolesGuard)
   @Delete(':id')
   async delete(
     @Param('id', ParseIntPipe) id: number,
