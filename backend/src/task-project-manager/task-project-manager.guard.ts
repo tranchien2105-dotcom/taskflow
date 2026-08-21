@@ -3,13 +3,22 @@ import {
   ExecutionContext,
   ForbiddenException,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+
+import { Task } from '../tasks/entities/task.entity';
 import { ProjectMembersService } from '../project-members/project-members.service';
 
 @Injectable()
-export class ProjectManagerGuard implements CanActivate {
+export class TaskProjectManagerGuard
+  implements CanActivate {
   constructor(
+    @InjectRepository(Task)
+    private readonly taskRepository: Repository<Task>,
+
     private readonly projectMembersService: ProjectMembersService,
   ) { }
 
@@ -20,20 +29,24 @@ export class ProjectManagerGuard implements CanActivate {
       context.switchToHttp().getRequest();
 
     const userId = request.user.userId;
+    const taskId = request.params.taskId;
 
-    const projectId =
-      request.params.projectId ??
-      request.params.id;
+    const task =
+      await this.taskRepository.findOne({
+        where: {
+          id: taskId,
+        },
+      });
 
-    if (!projectId) {
-      throw new ForbiddenException(
-        'Project context not found',
+    if (!task) {
+      throw new NotFoundException(
+        'Task not found',
       );
     }
 
     const isManager =
       await this.projectMembersService.isManager(
-        projectId,
+        task.projectId,
         userId,
       );
 

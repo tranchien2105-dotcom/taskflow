@@ -1,6 +1,7 @@
 import {
     IsDateString,
     IsEnum,
+    IsNotEmpty,
     IsOptional,
     IsString,
     IsUUID,
@@ -13,10 +14,8 @@ export class CreateTaskDto {
     @IsUUID()
     projectId!: string;
 
-    @IsUUID()
-    creatorId!: string;
-
     @IsString()
+    @IsNotEmpty()
     @MaxLength(200)
     title!: string;
 

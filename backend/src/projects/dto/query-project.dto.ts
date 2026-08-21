@@ -6,11 +6,25 @@ import {
     Max,
     Min,
 } from 'class-validator';
+
 import { Type } from 'class-transformer';
+
 import {
     ProjectPriority,
     ProjectStatus,
 } from '../entities/project.entity';
+
+export enum ProjectSortField {
+    CREATED_AT = 'createdAt',
+    UPDATED_AT = 'updatedAt',
+    NAME = 'name',
+    DUE_DATE = 'dueDate',
+}
+
+export enum SortOrder {
+    ASC = 'ASC',
+    DESC = 'DESC',
+}
 
 export class QueryProjectDto {
     @IsOptional()
@@ -39,10 +53,11 @@ export class QueryProjectDto {
     priority?: ProjectPriority;
 
     @IsOptional()
-    @IsString()
-    sortBy: string = 'createdAt';
+    @IsEnum(ProjectSortField)
+    sortBy: ProjectSortField =
+        ProjectSortField.CREATED_AT;
 
     @IsOptional()
-    @IsString()
-    sortOrder: 'ASC' | 'DESC' = 'DESC';
+    @IsEnum(SortOrder)
+    sortOrder: SortOrder = SortOrder.DESC;
 }

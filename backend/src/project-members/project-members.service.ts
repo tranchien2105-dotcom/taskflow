@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, EntityManager } from 'typeorm';
 
 import {
     ProjectMember,
@@ -27,9 +27,15 @@ export class ProjectMembersService {
         projectId: string,
         createDto: CreateProjectMemberDto,
         role: ProjectMemberRole = ProjectMemberRole.MEMBER,
+        manager?: EntityManager,
     ): Promise<ProjectMember> {
+
+        const repository = manager
+            ? manager.getRepository(ProjectMember)
+            : this.projectMemberRepository;
+
         const existingMember =
-            await this.projectMemberRepository.findOne({
+            await repository.findOne({
                 where: {
                     projectId,
                     userId: createDto.userId,
@@ -42,14 +48,13 @@ export class ProjectMembersService {
             );
         }
 
-        const member =
-            this.projectMemberRepository.create({
-                projectId,
-                userId: createDto.userId,
-                role,
-            });
+        const member = repository.create({
+            projectId,
+            userId: createDto.userId,
+            role,
+        });
 
-        return this.projectMemberRepository.save(member);
+        return repository.save(member);
     }
 
     async findAll(
@@ -103,10 +108,15 @@ export class ProjectMembersService {
             userId,
         );
 
-        // Không cho phép thay đổi role
-        throw new ForbiddenException(
-            'Project member role cannot be changed',
-        );
+        if (member.role === ProjectMemberRole.MANAGER) {
+            throw new ForbiddenException(
+                'Cannot change the role of a project manager',
+            );
+        }
+
+        member.role = updateDto.role;
+
+        return this.projectMemberRepository.save(member);
     }
 
     async remove(

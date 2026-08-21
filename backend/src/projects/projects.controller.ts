@@ -1,11 +1,21 @@
-import { Body, Controller, Get, Post, Query, Param, Patch, Delete } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    Param,
+    Patch,
+    Post,
+    Query,
+    Req,
+} from '@nestjs/common';
 
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { ProjectsService } from './projects.service';
 import { QueryProjectDto } from './dto/query-project.dto';
 import { UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { ProjectManagerGuard } from '../project-manager/project-manager.guard';
 
 @Controller('projects')
 export class ProjectsController {
@@ -14,30 +24,55 @@ export class ProjectsController {
     ) { }
 
     @Post()
-    create(@Body() createProjectDto: CreateProjectDto) {
-        return this.projectsService.create(createProjectDto);
+    create(
+        @Body() createProjectDto: CreateProjectDto,
+        @Req() req: any,
+    ) {
+        return this.projectsService.create(
+            createProjectDto,
+            req.user.userId,
+        );
     }
 
     @Get()
-    findAll(@Query() query: QueryProjectDto) {
-        return this.projectsService.findAll(query);
+    findAll(
+        @Query() query: QueryProjectDto,
+        @Req() req: any,
+    ) {
+        return this.projectsService.findAll(
+            query,
+            req.user.userId,
+        );
     }
 
     @Get(':id')
-    findOne(@Param('id') id: string) {
-        return this.projectsService.findOne(id);
+    findOne(
+        @Param('id') id: string,
+        @Req() req: any,
+    ) {
+        return this.projectsService.findOne(
+            id,
+            req.user.userId,
+        );
     }
 
     @Patch(':id')
+    @UseGuards(ProjectManagerGuard)
     update(
         @Param('id') id: string,
         @Body() updateProjectDto: UpdateProjectDto,
     ) {
-        return this.projectsService.update(id, updateProjectDto);
+        return this.projectsService.update(
+            id,
+            updateProjectDto,
+        );
     }
 
     @Delete(':id')
-    remove(@Param('id') id: string) {
+    @UseGuards(ProjectManagerGuard)
+    remove(
+        @Param('id') id: string,
+    ) {
         return this.projectsService.remove(id);
     }
 }

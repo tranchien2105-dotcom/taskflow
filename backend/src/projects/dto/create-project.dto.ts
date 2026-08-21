@@ -3,7 +3,6 @@ import {
     IsEnum,
     IsOptional,
     IsString,
-    IsUUID,
     MaxLength,
 } from 'class-validator';
 
@@ -40,7 +39,4 @@ export class CreateProjectDto {
     @IsOptional()
     @IsDateString()
     dueDate?: string;
-
-    @IsUUID()
-    ownerId!: string;
 }

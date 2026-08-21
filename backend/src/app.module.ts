@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
@@ -13,6 +13,9 @@ import { TaskLabelsModule } from './task-labels/task-labels.module';
 import { AuthModule } from './auth/auth.module';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
+import { RequestIdMiddleware } from './common/request-id/request-id.middleware';
+import { RedisModule } from './redis/redis.module';
+
 
 @Module({
   imports: [
@@ -46,6 +49,8 @@ import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
     TaskLabelsModule,
 
     AuthModule,
+
+    RedisModule,
   ],
 
   controllers: [AppController],
@@ -58,4 +63,9 @@ import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
     AppService
   ],
 })
-export class AppModule { }
+
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(RequestIdMiddleware).forRoutes('*');
+  }
+}

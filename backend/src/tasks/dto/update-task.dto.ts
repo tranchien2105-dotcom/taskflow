@@ -1,4 +1,42 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateTaskDto } from './create-task.dto';
+import {
+    IsDateString,
+    IsEnum,
+    IsNotEmpty,
+    IsOptional,
+    IsString,
+    IsUUID,
+    MaxLength,
+} from 'class-validator';
 
-export class UpdateTaskDto extends PartialType(CreateTaskDto) {}
+import {
+    TaskPriority,
+    TaskStatus,
+} from '../entities/task.entity';
+
+export class UpdateTaskDto {
+    @IsOptional()
+    @IsString()
+    @IsNotEmpty()
+    @MaxLength(200)
+    title?: string;
+
+    @IsOptional()
+    @IsString()
+    description?: string;
+
+    @IsOptional()
+    @IsEnum(TaskStatus)
+    status?: TaskStatus;
+
+    @IsOptional()
+    @IsEnum(TaskPriority)
+    priority?: TaskPriority;
+
+    @IsOptional()
+    @IsUUID()
+    assigneeId?: string;
+
+    @IsOptional()
+    @IsDateString()
+    dueDate?: string;
+}

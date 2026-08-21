@@ -1,0 +1,19 @@
+# Dependencies and generated output
+node_modules/
+backend/node_modules/
+backend/dist/
+coverage/
+
+# Local environment files and secrets
+.env
+.env.*
+!.env.example
+backend/.env
+backend/.env.*
+!backend/.env.example
+
+# Logs and editor files
+*.log
+.DS_Store
+.idea/
+.vscode/

@@ -10,11 +10,12 @@ import {
 } from '@nestjs/common';
 
 import { ProjectMembersService } from './project-members.service';
+
 import { ProjectAccessGuard } from '../project-access/project-access.guard';
-import { CreateProjectMemberDto } from '../project-members/dto/create-project-member.dto';
-import { UpdateProjectMemberDto } from '../project-members/dto//update-project-member.dto';
 import { ProjectManagerGuard } from '../project-manager/project-manager.guard';
 
+import { CreateProjectMemberDto } from './dto/create-project-member.dto';
+import { UpdateProjectMemberDto } from './dto/update-project-member.dto';
 
 @Controller('projects/:projectId/members')
 export class ProjectMembersController {
@@ -57,7 +58,7 @@ export class ProjectMembersController {
     }
 
     @Patch(':userId')
-    @UseGuards(ProjectAccessGuard)
+    @UseGuards(ProjectManagerGuard)
     update(
         @Param('projectId') projectId: string,
         @Param('userId') userId: string,
@@ -71,7 +72,7 @@ export class ProjectMembersController {
     }
 
     @Delete(':userId')
-    @UseGuards(ProjectAccessGuard)
+    @UseGuards(ProjectManagerGuard)
     remove(
         @Param('projectId') projectId: string,
         @Param('userId') userId: string,

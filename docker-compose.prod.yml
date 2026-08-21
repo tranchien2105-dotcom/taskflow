@@ -2,7 +2,7 @@ services:
   backend:
     build:
       context: ./backend
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
 
     container_name: taskflow-backend
 
@@ -10,10 +10,6 @@ services:
 
     env_file:
       - ./backend/.env
-
-    volumes:
-      - ./backend:/app
-      - /app/node_modules
 
     ports:
       - "3000:3000"
@@ -34,10 +30,7 @@ services:
     environment:
       POSTGRES_DB: taskflow
       POSTGRES_USER: taskflow
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-taskflow}
-
-    ports:
-      - "5432:5432"
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in the root .env file}
 
     volumes:
       - postgres_data:/var/lib/postgresql/data
@@ -58,9 +51,6 @@ services:
     container_name: taskflow-redis
 
     restart: unless-stopped
-
-    ports:
-      - "6379:6379"
 
     volumes:
       - redis_data:/data

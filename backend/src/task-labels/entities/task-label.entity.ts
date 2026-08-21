@@ -10,6 +10,7 @@ import {
 import { Label } from '../../labels/entities/label.entity';
 import { Task } from '../../tasks/entities/task.entity';
 
+
 @Entity('task_labels')
 @Unique(['taskId', 'labelId'])
 export class TaskLabel {

@@ -6,10 +6,13 @@ import {
     ManyToOne,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
+    OneToMany,
+    Index
 } from 'typeorm';
 
 import { Project } from '../../projects/entities/project.entity';
 import { User } from '../../users/entities/user.entity';
+import { TaskLabel } from '../../task-labels/entities/task-label.entity';
 
 export enum TaskStatus {
     TODO = 'TODO',
@@ -26,6 +29,8 @@ export enum TaskPriority {
 }
 
 @Entity('tasks')
+@Index('idx_tasks_project_id', ['projectId'])
+@Index('idx_tasks_assignee_id', ['assigneeId'])
 export class Task {
     @PrimaryGeneratedColumn('uuid')
     id!: string;
@@ -42,6 +47,12 @@ export class Task {
     })
     @JoinColumn({ name: 'project_id' })
     project!: Project;
+
+    @OneToMany(
+        () => TaskLabel,
+        (taskLabel) => taskLabel.task,
+    )
+    taskLabels!: TaskLabel[];
 
     @Column({
         type: 'varchar',
